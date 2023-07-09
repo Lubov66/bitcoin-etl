@@ -33,7 +33,10 @@ setup(
     install_requires=[
         'requests~=2.20',
         'python-dateutil~=2.7',
-        'click~=7.0'
+        'click~=7.0',
+        'sqlalchemy~=2.0.18',
+        'clickhouse-driver~=0.2.6',
+        'boto3~=1.28.1'
     ],
     extras_require={
         'streaming': [

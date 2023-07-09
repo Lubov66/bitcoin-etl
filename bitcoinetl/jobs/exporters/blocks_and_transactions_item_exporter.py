@@ -22,6 +22,7 @@
 
 
 from blockchainetl.jobs.exporters.composite_item_exporter import CompositeItemExporter
+from blockchainetl.jobs.exporters.s3_item_exporter import S3ItemExporter
 
 BLOCK_FIELDS_TO_EXPORT = [
     'hash',
@@ -61,7 +62,7 @@ TRANSACTION_FIELDS_TO_EXPORT = [
 ]
 
 
-def blocks_and_transactions_item_exporter(blocks_output=None, transactions_output=None):
+def blocks_and_transactions_item_exporter(blocks_output=None, transactions_output=None, output=None):
     filename_mapping = {}
     field_mapping = {}
 
@@ -72,6 +73,14 @@ def blocks_and_transactions_item_exporter(blocks_output=None, transactions_outpu
     if transactions_output is not None:
         filename_mapping['transaction'] = transactions_output
         field_mapping['transaction'] = TRANSACTION_FIELDS_TO_EXPORT
+
+    if output is not None and output.startswith('s3://'):
+        return S3ItemExporter(
+            output=output,
+            filename_mapping=filename_mapping,
+            field_mapping=field_mapping
+        )
+
 
     return CompositeItemExporter(
         filename_mapping=filename_mapping,
