@@ -2,8 +2,6 @@ name: release-image-ECR
 
 on:
   push:
-    branches:
-      - chainbase
     tags:
       - "*"
 
