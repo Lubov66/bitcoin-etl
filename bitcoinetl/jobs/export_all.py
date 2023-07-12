@@ -44,6 +44,7 @@ logger = logging.getLogger('export_all')
 def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_size, enrich, output=None, checkpoint: FileCheckpoint=None):
     for batch_start_block, batch_end_block, partition_dir, *args in partitions:
         # # # start # # #
+        checkpoint.write_last_synced_block(batch_start_block)
 
         start_time = time()
 
@@ -149,4 +150,4 @@ def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_s
             block_range=block_range,
             time_diff=time_diff,
         ))
-        checkpoint.write_last_synced_block(batch_end_block)
+
