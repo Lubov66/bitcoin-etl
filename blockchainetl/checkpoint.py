@@ -1,3 +1,4 @@
+import logging
 import os
 
 from blockchainetl.file_utils import smart_open
@@ -24,7 +25,9 @@ class FileCheckpoint:
     if self.last_synced_block_file is None or not os.path.isfile(self.last_synced_block_file):
       return default_value
     with smart_open(self.last_synced_block_file, 'r') as last_synced_block_file:
-      return int(last_synced_block_file.read())
+      point = last_synced_block_file.read()
+      logging.info(f'Load checkpoint {point}')
+      return int(point)
 
   def write_to_file(self, content):
     if self.last_synced_block_file is None:

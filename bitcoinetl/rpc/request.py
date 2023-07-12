@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import time
 
 import requests
 
@@ -25,4 +26,5 @@ def make_post_request(endpoint_uri, data, *args, **kwargs):
         except Exception as e:
             if retry_total == i + 1:
               raise e
+            time.sleep(3)
             logger.warning(f"An error was encountered sending the RPC request {e}")
