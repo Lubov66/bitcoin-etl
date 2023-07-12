@@ -29,6 +29,7 @@ from bitcoinetl.enumeration.chain import Chain
 from bitcoinetl.jobs.export_all import export_all as do_export_all
 from bitcoinetl.service.btc_block_range_service import BtcBlockRangeService
 from bitcoinetl.rpc.bitcoin_rpc import BitcoinRpc
+from blockchainetl.checkpoint import FileCheckpoint
 from blockchainetl.thread_local_proxy import ThreadLocalProxy
 
 
@@ -86,6 +87,8 @@ def get_partitions(start, end, partition_batch_size, provider_uri):
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('-s', '--start', required=True, type=str, help='Start block/ISO date.')
 @click.option('-e', '--end', required=True, type=str, help='End block/ISO date.')
+@click.option('-l', '--last-synced-block-file', default=None, type=str,
+              help='The file with the last synced block number.')
 @click.option('-b', '--partition-batch-size', default=100, type=int,
               help='The number of blocks to export in partition.')
 @click.option('-p', '--provider-uri', default='http://user:pass@localhost:8332', type=str,
@@ -97,7 +100,11 @@ def get_partitions(start, end, partition_batch_size, provider_uri):
               help='The type of chain.')
 @click.option('--enrich', default=False, type=bool, help='Enable filling in transactions inputs fields.')
 @click.option('--output', default=None, type=str, help='Upload source')
-def export_all(start, end, partition_batch_size, provider_uri, output_dir, max_workers, export_batch_size, chain, enrich, output=None):
+def export_all(start, end, last_synced_block_file, partition_batch_size, provider_uri, output_dir, max_workers, export_batch_size, chain, enrich, output=None):
+
+    file_checkpoint = FileCheckpoint(last_synced_block_file)
+    start_block = file_checkpoint.read_last_synced_block(start)
+
     """Exports all data for a range of blocks."""
-    do_export_all(chain, get_partitions(start, end, partition_batch_size, provider_uri),
-                  output_dir, provider_uri, max_workers, export_batch_size, enrich, output)
+    do_export_all(chain, get_partitions(str(start_block), end, partition_batch_size, provider_uri),
+                  output_dir, provider_uri, max_workers, export_batch_size, enrich, output, checkpoint=file_checkpoint)

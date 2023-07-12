@@ -31,6 +31,7 @@ from bitcoinetl.jobs.export_blocks_job import ExportBlocksJob
 from bitcoinetl.jobs.enrich_transactions import EnrichTransactionsJob
 from bitcoinetl.jobs.exporters.blocks_and_transactions_item_exporter import blocks_and_transactions_item_exporter
 from bitcoinetl.rpc.bitcoin_rpc import BitcoinRpc
+from blockchainetl.checkpoint import FileCheckpoint
 from blockchainetl.file_utils import smart_open
 from blockchainetl.logging_utils import logging_basic_config
 from blockchainetl.misc_utils import filter_items
@@ -40,7 +41,7 @@ logging_basic_config()
 logger = logging.getLogger('export_all')
 
 
-def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_size, enrich, output=None):
+def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_size, enrich, output=None, checkpoint: FileCheckpoint=None):
     for batch_start_block, batch_end_block, partition_dir, *args in partitions:
         # # # start # # #
 
@@ -148,3 +149,4 @@ def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_s
             block_range=block_range,
             time_diff=time_diff,
         ))
+        checkpoint.write_last_synced_block(batch_end_block)
