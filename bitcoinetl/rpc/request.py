@@ -3,6 +3,7 @@ import logging
 import time
 
 import requests
+from requests.adapters import HTTPAdapter
 
 _session_cache = {}
 retry_total = 5
@@ -11,7 +12,10 @@ logger = logging.getLogger(__name__)
 def _get_session(endpoint_uri):
     cache_key = hashlib.md5(endpoint_uri.encode('utf-8')).hexdigest()
     if cache_key not in _session_cache:
-        _session_cache[cache_key] = requests.Session()
+        client_session = requests.Session()
+        client_session.mount('https://', HTTPAdapter(pool_maxsize=128))
+        client_session.mount('http://', HTTPAdapter(pool_maxsize=128))
+        _session_cache[cache_key] = client_session
     return _session_cache[cache_key]
 
 
