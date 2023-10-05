@@ -62,7 +62,7 @@ TRANSACTION_FIELDS_TO_EXPORT = [
 ]
 
 
-def blocks_and_transactions_item_exporter(blocks_output=None, transactions_output=None, output=None):
+def blocks_and_transactions_item_exporter(blocks_output=None, transactions_output=None, output=None, **kwargs):
     filename_mapping = {}
     field_mapping = {}
 
@@ -78,7 +78,8 @@ def blocks_and_transactions_item_exporter(blocks_output=None, transactions_outpu
         return S3ItemExporter(
             output=output,
             filename_mapping=filename_mapping,
-            field_mapping=field_mapping
+            field_mapping=field_mapping,
+            **kwargs
         )
 
 

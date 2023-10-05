@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from pathlib import Path
 
 import boto3
@@ -20,6 +21,7 @@ class S3ItemExporter(CompositeItemExporter):
       filename_mapping,
       field_mapping=None,
       converters=(),
+      with_ignore_delete_transaction_file=False
   ):
     super().__init__(filename_mapping, field_mapping, converters=converters)
     self.field_mapping = {}
@@ -30,6 +32,7 @@ class S3ItemExporter(CompositeItemExporter):
     path = output.replace('s3://', '')
     self.directory = path[path.index('/') + 1:]
     self.bucket = self.s3.Bucket(path[:path.index('/')])
+    self.with_ignore_delete_transaction_file = with_ignore_delete_transaction_file
 
   def close(self):
     for item_type, file in self.file_mapping.items():
@@ -44,5 +47,7 @@ class S3ItemExporter(CompositeItemExporter):
         self.bucket.upload_file(file.name, upload_file)
         self.logger.info('Uploaded {} to S3'.format(item_type))
 
-        os.remove(file.name)
-        os.rmdir(file_path.parents[0])
+    for item_type, file in self.file_mapping.items():
+        file_path = Path(file.name)
+        if not self.with_ignore_delete_transaction_file:
+            shutil.rmtree(file_path.parents[0])

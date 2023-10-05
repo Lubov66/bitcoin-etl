@@ -101,7 +101,7 @@ def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_s
             batch_size=batch_size,
             bitcoin_rpc=ThreadLocalProxy(lambda: BitcoinRpc(provider_uri)),
             max_workers=max_workers,
-            item_exporter=blocks_and_transactions_item_exporter(blocks_file, transactions_file, output),
+            item_exporter=blocks_and_transactions_item_exporter(blocks_file, transactions_file, output, with_ignore_delete_transaction_file=enrich),
             export_blocks=blocks_file is not None,
             export_transactions=transactions_file is not None)
         job.run()
@@ -113,7 +113,7 @@ def export_all(chain, partitions, output_dir, provider_uri, max_workers, batch_s
                     batch_size = batch_size,
                     bitcoin_rpc = ThreadLocalProxy(lambda: BitcoinRpc(provider_uri)),
                     max_workers = max_workers,
-                    item_exporter = blocks_and_transactions_item_exporter(None, enriched_transactions_file, output),
+                    item_exporter = blocks_and_transactions_item_exporter(None, enriched_transactions_file, output, with_ignore_delete_transaction_file=False),
                     chain = chain
                 )
                 job.run()
