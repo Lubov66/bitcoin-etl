@@ -30,8 +30,6 @@ def get_item_exporter(output):
             item_type_to_topic_mapping={
                 'block': 'blocks',
                 'transaction': 'transactions',
-                'input': 'inputs',
-                'output': 'outputs'
             },
             converters=[ObjectToJsonFieldItemConverter(keys=['inputs', 'outputs'])]
         )
