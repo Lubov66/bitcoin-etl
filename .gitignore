@@ -50,3 +50,4 @@ venv/
 ENV/
 
 .idea/
+last_synced_block*.txt
