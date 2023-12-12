@@ -28,8 +28,8 @@ def get_item_exporter(output):
         item_exporter = KafkaItemExporter(
             output=output,
             item_type_to_topic_mapping={
-                'block': 'blocks',
-                'transaction': 'transactions',
+                'block': 'btc_blocks',
+                'transaction': 'btc_transactions',
             },
             converters=[ObjectToJsonFieldItemConverter(keys=['inputs', 'outputs'])]
         )
