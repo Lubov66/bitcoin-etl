@@ -23,6 +23,16 @@ def get_item_exporter(output):
                 'transaction': 'block_number'
             }
         )
+    elif item_exporter_type == ItemExporterType.KAFKA:
+        from blockchainetl.jobs.exporters.kafka_item_exporter import KafkaItemExporter
+        item_exporter = KafkaItemExporter(
+            output=output,
+            item_type_to_topic_mapping={
+                'block': 'btc_blocks',
+                'transaction': 'btc_transactions',
+            },
+            converters=[ObjectToJsonFieldItemConverter(keys=['inputs', 'outputs'])]
+        )
     else:
         item_exporter = ConsoleItemExporter()
 
@@ -37,9 +47,12 @@ def determine_item_exporter_type(output):
         return ItemExporterType.CLICKHOUSE
     elif output is not None and output.startswith('s3'):
         return ItemExporterType.S3
+    elif output is not None and output.startswith('kafka'):
+        return ItemExporterType.KAFKA
 
 
 class ItemExporterType:
   PUBSUB = 'pubsub'
   CLICKHOUSE = 'clickhouse'
+  KAFKA = 'kafka'
   S3 = 'clickhouse'
