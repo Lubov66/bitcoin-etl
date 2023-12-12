@@ -51,6 +51,7 @@ ENV/
 
 .idea/
 last_synced_block*.txt
+last_sync_block*.txt
 *.txt 
 
 
