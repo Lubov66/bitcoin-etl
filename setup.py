@@ -37,6 +37,7 @@ setup(
         'sqlalchemy~=2.0.18',
         'clickhouse-driver~=0.2.6',
         'boto3~=1.28.1'
+        "kafka-python~=2.0.2"
     ],
     extras_require={
         'streaming': [
