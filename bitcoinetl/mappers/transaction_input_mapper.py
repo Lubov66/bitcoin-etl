@@ -47,7 +47,12 @@ class BtcTransactionInputMapper(object):
             input.script_asm = (json_dict.get('scriptSig')).get('asm')
             input.script_hex = (json_dict.get('scriptSig')).get('hex')
         
-        input.witness = json_dict.get('txinwitness')
+        if 'txinwitness' in json_dict:
+            if json_dict.get('txinwitness') is not None and len(json_dict.get('txinwitness')) > 0:
+                input.witness = json_dict.get('txinwitness')
+            elif json_dict.get('txinwitness') is None:
+                input.witness = []
+
 
         return input
 
