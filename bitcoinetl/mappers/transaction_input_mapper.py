@@ -65,6 +65,7 @@ class BtcTransactionInputMapper(object):
                 'type': input.type,
                 'addresses': input.addresses,
                 'value': input.value,
+                'witness': input.witness,
             }
             result.append(item)
         return result
@@ -83,6 +84,7 @@ class BtcTransactionInputMapper(object):
             input.type = dict.get('type')
             input.addresses = dict.get('addresses')
             input.value = dict.get('value')
+            input.witness = dict.get('witness')
 
             result.append(input)
         return result
