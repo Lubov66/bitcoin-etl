@@ -61,7 +61,7 @@ class BitcoinRpc:
             )
 
             if self.redis_cli is not None:
-                self.redis_cli.setex(redis_key, int(1200), raw_response)
+                self.redis_cli.setex(redis_key, int(600), raw_response)
         
         response = self._decode_rpc_response(raw_response)
 
