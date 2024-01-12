@@ -342,7 +342,3 @@ handle chain reorganizations - they are less likely the further a block from the
 ### Public Datasets in BigQuery
 
 https://cloud.google.com/blog/products/data-analytics/introducing-six-new-cryptocurrencies-in-bigquery-public-datasets-and-how-to-analyze-them
-
-
-
-python bitcoinetl stream --provider-uri=https://multi-wispy-choice.btc.quiknode.pro/f2776593c689b0d51aa7f8a9972ade7c5901545a --last-synced-block-file=./last_synced_block_kafka_20231205.txt --output=kafka/localhost:9094 --max-workers=1 --start-block=1 --block-batch-size=1 --with-redis --redis-host=127.0.0.1 
