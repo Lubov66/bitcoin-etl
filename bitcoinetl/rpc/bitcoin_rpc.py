@@ -24,27 +24,45 @@ import decimal
 import json
 
 from bitcoinetl.rpc.request import make_post_request
-
+import redis
 
 class BitcoinRpc:
 
-    def __init__(self, provider_uri, timeout=60):
+    def __init__(self, provider_uri, redis_cli=None, timeout=60):
         self.provider_uri = provider_uri
         self.timeout = timeout
+        self.redis_cli = redis_cli
 
     def batch(self, commands):
         rpc_calls = []
+        params_text = []
         for command in commands:
             m = command.pop(0)
             rpc_calls.append({"jsonrpc": "2.0", "method": m, "params": command, "id": "1"})
+            params_text = 'bitcoin-' + m + '-'
+            for c in command:
+                params_text += str(c)
+
         text = json.dumps(rpc_calls)
         request_data = text.encode('utf-8')
-        raw_response = make_post_request(
-            self.provider_uri,
-            request_data,
-            timeout=self.timeout
-        )
 
+        redis_key = json.dumps(params_text)
+
+        raw_response = None
+
+        if self.redis_cli is not None:
+            raw_response = self.redis_cli.get(redis_key)
+
+        if raw_response is None:
+            raw_response = make_post_request(
+                self.provider_uri,
+                request_data,
+                timeout=self.timeout
+            )
+
+            if self.redis_cli is not None:
+                self.redis_cli.setex(redis_key, int(1200), raw_response)
+        
         response = self._decode_rpc_response(raw_response)
 
         result = []

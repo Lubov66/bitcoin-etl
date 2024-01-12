@@ -28,6 +28,8 @@ from bitcoinetl.rpc.bitcoin_rpc import BitcoinRpc
 from blockchainetl.logging_utils import logging_basic_config
 from blockchainetl.streaming.streaming_utils import configure_logging, configure_signals
 from blockchainetl.thread_local_proxy import ThreadLocalProxy
+import redis
+import logging 
 
 logging_basic_config()
 
@@ -38,6 +40,11 @@ logging_basic_config()
 @click.option('--lag', default=0, type=int, help='The number of blocks to lag behind the network.')
 @click.option('-p', '--provider-uri', default='http://user:pass@localhost:8332', type=str,
               help='The URI of the remote Bitcoin node.')
+
+@click.option('--with-redis', default=False, type=bool,
+              help='with the redis to store rpc response')
+@click.option('--redis-host', default='127.0.0.1', type=str, help='redis host')
+
 @click.option('-o', '--output', type=str,
               help='Google PubSub topic path e.g. projects/your-project/topics/bitcoin_blockchain. '
                    'If not specified will print to console.')
@@ -52,7 +59,7 @@ logging_basic_config()
 @click.option('--enrich', default=True, type=bool, help='Enable filling in transactions inputs fields.')
 def stream(last_synced_block_file, lag, provider_uri, output, start_block, chain=Chain.BITCOIN,
            period_seconds=10, batch_size=2, block_batch_size=10, max_workers=5, log_file=None, pid_file=None,
-           enrich=True):
+           enrich=True, with_redis=False, redis_host=None):
     """Streams all data types to console or Google Pub/Sub."""
     configure_logging(log_file)
     configure_signals()
@@ -61,8 +68,12 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, chain
     from bitcoinetl.streaming.btc_streamer_adapter import BtcStreamerAdapter
     from blockchainetl.streaming.streamer import Streamer
 
+    if with_redis:
+        redis_cli = redis.Redis(host=redis_host, port=6379, db=0)
+        logging.info('connected to redis cli', redis_cli)
+
     streamer_adapter = BtcStreamerAdapter(
-        bitcoin_rpc=ThreadLocalProxy(lambda: BitcoinRpc(provider_uri)),
+        bitcoin_rpc=ThreadLocalProxy(lambda: BitcoinRpc(provider_uri, redis_cli)),
         item_exporter=get_item_exporter(output),
         chain=chain,
         batch_size=batch_size,
