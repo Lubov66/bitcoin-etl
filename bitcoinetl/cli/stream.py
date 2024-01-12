@@ -68,6 +68,7 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, chain
     from bitcoinetl.streaming.btc_streamer_adapter import BtcStreamerAdapter
     from blockchainetl.streaming.streamer import Streamer
 
+    redis_cli = None
     if with_redis:
         redis_cli = redis.Redis(host=redis_host, port=6379, db=0)
         logging.info('connected to redis cli', redis_cli)
