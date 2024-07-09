@@ -3,7 +3,7 @@ from blockchainetl.jobs.exporters.converters.object_to_json_field_item_converter
   ObjectToJsonFieldItemConverter
 
 
-def get_item_exporter(output):
+def get_item_exporter(output, **kwargs):
     item_exporter_type = determine_item_exporter_type(output)
     if item_exporter_type == ItemExporterType.PUBSUB:
         from blockchainetl.jobs.exporters.google_pubsub_item_exporter import GooglePubSubItemExporter
@@ -21,7 +21,8 @@ def get_item_exporter(output):
             partitioning_key={
                 'block': 'number',
                 'transaction': 'block_number'
-            }
+            },
+            **kwargs
         )
     elif item_exporter_type == ItemExporterType.KAFKA:
         from blockchainetl.jobs.exporters.kafka_item_exporter import KafkaItemExporter
@@ -37,7 +38,6 @@ def get_item_exporter(output):
         item_exporter = ConsoleItemExporter()
 
     return item_exporter
-
 
 
 def determine_item_exporter_type(output):
