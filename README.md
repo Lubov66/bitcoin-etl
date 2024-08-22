@@ -282,7 +282,7 @@ You can tune `--batch-size`, `--max-workers` for performance.
 
 This command is guaranteed to return the block range that covers all blocks with `block.time` on the specified
 date. However the returned block range may also contain blocks outside the specified date, because block times are not
-monotonic https://twitter.com/EvgeMedvedev/status/1073844856009576448. You can filter
+monotonic https://x.com/EvgeMedvedev/status/1073844856009576448. You can filter
 `blocks.json`/`transactions.json` with the below command:
 
 ```bash
